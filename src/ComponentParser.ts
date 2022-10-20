@@ -95,6 +95,11 @@ interface Extends {
   import: string;
 }
 
+interface RelationshipOf {
+  interface: string;
+  import: string;
+}
+
 interface ComponentPropBindings {
   elements: string[];
 }
@@ -116,6 +121,8 @@ export default class ComponentParser {
   private compiled?: CompiledSvelteCode;
   private parsed?: Ast;
   private rest_props?: RestProps;
+  private childOf?: RelationshipOf;
+  private parentOf?: RelationshipOf;
   private extends?: Extends;
   private componentComment?: string;
   private readonly reactive_vars: Set<string> = new Set();
@@ -262,6 +269,18 @@ export default class ComponentParser {
         switch (tag) {
           case "extends":
             this.extends = {
+              interface: name,
+              import: type,
+            };
+            break;
+          case "childOf":
+            this.childOf = {
+              interface: name,
+              import: type,
+            };
+            break;
+          case "parentOf":
+            this.parentOf = {
               interface: name,
               import: type,
             };
@@ -710,6 +729,8 @@ export default class ComponentParser {
       typedefs: ComponentParser.mapToArray(this.typedefs),
       rest_props: this.rest_props,
       extends: this.extends,
+      childOf: this.childOf,
+      parentOf: this.parentOf,
       componentComment: this.componentComment,
     };
   }
